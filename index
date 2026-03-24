@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Printer Ink Layout</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #eef1f6;
+    --surface: #ffffff;
+    --surface2: #f4f6fa;
+    --border: #d0d8e8;
+    --border2: #b8c4d8;
+    --accent: #2a6fdb;
+    --accent2: #e05a20;
+    --text: #2c3a52;
+    --text-dim: #7a90b0;
+    --text-bright: #1a2840;
+    --head-w: 68px;
+    --head-h: 120px;
+    --gap: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 24px 48px;
+  }
+
+  /* ── Header ─────────────────────────────────────────────────────────── */
+  header {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 24px;
+    text-align: center;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 14px;
+  }
+
+  .brand-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  /* ── Layout controls ─────────────────────────────────────────────────── */
+  .controls-bar {
+    width: 100%;
+    max-width: 900px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(42,111,219,0.05);
+  }
+
+  .controls-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ctrl-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ctrl-group label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .ctrl-group input[type="number"] {
+    width: 58px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-bright);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 6px 8px;
+    text-align: center;
+    transition: border-color 0.13s;
+    -moz-appearance: textfield;
+  }
+  .ctrl-group input[type="number"]::-webkit-outer-spin-button,
+  .ctrl-group input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .ctrl-group input[type="number"]:focus { outline: none; border-color: var(--accent); }
+
+  .ctrl-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--border);
+  }
+
+  .total-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+  .total-badge span {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .apply-layout-btn {
+    margin-left: auto;
+    padding: 8px 18px;
+    background: var(--accent);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s;
+    white-space: nowrap;
+  }
+  .apply-layout-btn:hover {
+    background: #1a5ccc;
+    box-shadow: 0 3px 12px rgba(42,111,219,0.3);
+  }
+
+  /* ── Diagram panel ───────────────────────────────────────────────────── */
+  .diagram-panel {
+    width: 100%;
+    max-width: 900px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 36px 28px 28px;
+    position: relative;
+    box-shadow: 0 2px 12px rgba(42,111,219,0.07);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .diagram-panel::before {
+    content: 'CLICK ANY HEAD TO CONFIGURE';
+    position: absolute;
+    top: 11px; left: 0; right: 0;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2.5px;
+  }
+
+  .diagram-panel::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    border-radius: 8px 8px 0 0;
+  }
+
+  /* ── Head array: outer wrapper centres the staggered block ──────────── */
+  .array-outer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .diagram-container {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* ── One row block (label + heads) ──────────────────────────────────── */
+  .row-block { display: flex; flex-direction: column; }
+
+  .row-tag-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    white-space: nowrap;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .head-row {
+    display: flex;
+    gap: var(--gap);
+    margin-bottom: 20px;
+  }
+
+  /* Odd rows (1-indexed) get the stagger offset */
+  .head-row.staggered {
+    margin-left: calc(var(--head-w) / 2 + var(--gap) / 2);
+  }
+
+  /* ── Printhead ───────────────────────────────────────────────────────── */
+  .printhead {
+    width: var(--head-w);
+    height: var(--head-h);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    border: 1.5px solid var(--border2);
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  }
+
+  .printhead:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(42,111,219,0.18), 0 0 0 2px var(--accent);
+    border-color: var(--accent);
+    z-index: 10;
+  }
+
+  .printhead.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2.5px var(--accent), 0 6px 20px rgba(42,111,219,0.2);
+  }
+
+  .head-fill       { position:absolute; inset:0; transition:background 0.3s; }
+  .head-fill-left  { position:absolute; top:0;left:0;bottom:0;width:50%; transition:background 0.3s; }
+  .head-fill-right { position:absolute; top:0;right:0;bottom:0;width:50%; transition:background 0.3s; }
+
+  .head-divider {
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    width: 1.5px;
+    background: rgba(0,0,0,0.18);
+    z-index: 2;
+  }
+
+  .head-overlay {
+    position: absolute; inset: 0;
+    z-index: 3; pointer-events: none;
+  }
+
+  .head-single {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100%; padding: 6px 4px 6px;
+    gap: 4px;
+  }
+
+  .head-id {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px; font-weight: 700;
+    color: rgba(255,255,255,0.93);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    letter-spacing: 1px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .head-inkname {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 7.5px;
+    color: rgba(255,255,255,0.78);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-align: center;
+    line-height: 1.25;
+    word-break: break-word;
+    max-width: 100%;
+    padding: 0 3px;
+  }
+
+  .head-dual { display: flex; height: 100%; }
+
+  .head-half {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 6px 2px;
+    gap: 3px;
+    overflow: hidden;
+  }
+
+  .head-id-half {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; font-weight: 700;
+    color: rgba(255,255,255,0.93);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    letter-spacing: 0.5px;
+    text-align: center; line-height: 1;
+  }
+
+  .head-inkname-half {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 6.5px;
+    color: rgba(255,255,255,0.75);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    text-align: center; line-height: 1.2;
+    word-break: break-word;
+    max-width: 100%; overflow: hidden;
+  }
+
+  /* Head wrapper & number below */
+  .head-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .head-num {
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 5px;
+  }
+
+  /* Unassigned state */
+  .head-unassigned-bg { background: #dde4f0 !important; }
+  .dim-text { color: var(--text-dim) !important; text-shadow: none !important; }
+
+  /* ── Legend ──────────────────────────────────────────────────────────── */
+  .legend {
+    width: 100%;
+    max-width: 900px;
+    margin-top: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(42,111,219,0.05);
+  }
+
+  .legend-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; color: var(--text-dim);
+    letter-spacing: 3px; flex-basis: 100%; margin-bottom: 2px;
+  }
+
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+  }
+
+  .legend-swatch {
+    width: 14px; height: 14px; border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0.12); flex-shrink: 0;
+  }
+
+  /* ── MODAL ───────────────────────────────────────────────────────────── */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(20,32,55,0.3);
+    backdrop-filter: blur(4px);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-backdrop.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 360px; max-width: 95vw;
+    padding: 28px 26px 22px;
+    position: relative;
+    box-shadow: 0 24px 64px rgba(20,40,80,0.2);
+    animation: popIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.88); opacity: 0; }
+    to   { transform: scale(1);    opacity: 1; }
+  }
+
+  .modal::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 10px 10px 0 0;
+  }
+
+  .modal-close {
+    position: absolute; top: 12px; right: 14px;
+    background: none; border: none;
+    font-size: 16px; color: var(--text-dim);
+    cursor: pointer; line-height: 1;
+    transition: color 0.15s;
+    font-family: 'Share Tech Mono', monospace;
+    padding: 2px 5px; border-radius: 3px;
+  }
+  .modal-close:hover { color: var(--text-bright); background: var(--surface2); }
+
+  .modal-tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px;
+  }
+
+  .modal-title {
+    font-size: 22px; font-weight: 700;
+    color: var(--text-bright);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 3px;
+  }
+
+  .modal-hint {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px; color: var(--text-dim);
+    margin-bottom: 18px; letter-spacing: 1px;
+  }
+
+  .divider-line { border: none; border-top: 1px solid var(--border); margin: 14px 0; }
+
+  .config-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: var(--accent); text-transform: uppercase;
+    display: block; margin-bottom: 7px;
+  }
+
+  .mode-toggle { display: flex; gap: 8px; }
+
+  .mode-btn {
+    flex: 1; padding: 8px 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 600;
+    letter-spacing: 1px; cursor: pointer;
+    transition: all 0.13s; text-transform: uppercase;
+  }
+  .mode-btn:hover { border-color: var(--accent); color: var(--text); }
+  .mode-btn.active {
+    background: rgba(42,111,219,0.1);
+    border-color: var(--accent); color: var(--accent);
+  }
+
+  .channel-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px; padding: 12px; margin-bottom: 10px;
+  }
+
+  .channel-block-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; color: var(--text-dim);
+    letter-spacing: 2px; margin-bottom: 9px;
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  .channel-swatch {
+    width: 10px; height: 10px; border-radius: 2px;
+    border: 1px solid rgba(0,0,0,0.15); flex-shrink: 0;
+  }
+
+  select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text-bright);
+    font-family: 'Share Tech Mono', monospace; font-size: 12px;
+    padding: 8px 30px 8px 10px; cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232a6fdb'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+    margin-bottom: 8px; transition: border-color 0.13s;
+  }
+  select:focus { outline: none; border-color: var(--accent); }
+
+  input[type="text"] {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text-bright);
+    font-family: 'Share Tech Mono', monospace; font-size: 12px;
+    padding: 8px 10px; transition: border-color 0.13s;
+  }
+  input[type="text"]:focus { outline: none; border-color: var(--accent); }
+  input[type="text"]::placeholder { color: var(--text-dim); }
+
+  .apply-btn {
+    width: 100%; padding: 11px;
+    background: var(--accent); border: none; border-radius: 5px;
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif; font-size: 14px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer; margin-top: 6px;
+    transition: background 0.15s, box-shadow 0.15s;
+  }
+  .apply-btn:hover {
+    background: #1a5ccc;
+    box-shadow: 0 4px 16px rgba(42,111,219,0.35);
+  }
+
+  /* Confirm dialog for layout reset */
+  .confirm-bar {
+    display: none;
+    background: #fff8f0;
+    border: 1px solid #f0c070;
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: #7a5000;
+    letter-spacing: 0.5px;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .confirm-bar.visible { display: flex; }
+  .confirm-bar button {
+    padding: 5px 12px;
+    border: none; border-radius: 3px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer; letter-spacing: 1px;
+  }
+  .confirm-yes { background: var(--accent2); color: #fff; }
+  .confirm-no  { background: var(--border);  color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand-title">Printer Ink Layout</div>
+</header>
+
+<!-- Layout controls -->
+<div class="controls-bar">
+  <span class="controls-label">Layout</span>
+
+  <div class="ctrl-group">
+    <label for="inputRows">ROWS</label>
+    <input type="number" id="inputRows" min="1" max="12" value="2">
+  </div>
+
+  <div class="ctrl-divider"></div>
+
+  <div class="ctrl-group">
+    <label for="inputCols">COLUMNS</label>
+    <input type="number" id="inputCols" min="1" max="20" value="4">
+  </div>
+
+  <div class="ctrl-divider"></div>
+
+  <div class="total-badge">TOTAL: <span id="totalCount">8</span> HEADS</div>
+
+  <button class="apply-layout-btn" onclick="requestRebuild()">▶ APPLY LAYOUT</button>
+</div>
+
+<!-- Warning bar -->
+<div class="controls-bar confirm-bar" id="confirmBar" style="margin-top:-8px;margin-bottom:8px">
+  ⚠ Changing layout will reset configurations for removed heads.
+  <button class="confirm-yes" onclick="confirmRebuild()">Confirm</button>
+  <button class="confirm-no"  onclick="cancelRebuild()">Cancel</button>
+</div>
+
+<!-- Diagram -->
+<div class="diagram-panel">
+  <div class="array-outer">
+    <div class="diagram-container" id="diagramContainer"></div>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="legend">
+  <div class="legend-title">COLOUR REFERENCE</div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop" onclick="handleBackdropClick(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-tag">Head Config</div>
+    <div class="modal-title" id="cfgTitle">HEAD 1</div>
+    <div class="modal-hint"  id="cfgHint">ROW 1 · COL 1</div>
+
+    <div style="margin-bottom:14px">
+      <span class="config-label">Channel Mode</span>
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btnSingle" onclick="setMode('single')">Single</button>
+        <button class="mode-btn"        id="btnDual"   onclick="setMode('dual')">Dual</button>
+      </div>
+    </div>
+
+    <hr class="divider-line">
+
+    <div id="ch1Block">
+      <div class="channel-block">
+        <div class="channel-block-title"><div class="channel-swatch" id="swatch1"></div>CH · A</div>
+        <select id="sel1" onchange="updateSwatch(1)"><option value="">— SELECT ID —</option></select>
+        <input type="text" id="ink1" placeholder="Ink name / description…">
+      </div>
+    </div>
+
+    <div id="ch2Block" style="display:none">
+      <div class="channel-block">
+        <div class="channel-block-title"><div class="channel-swatch" id="swatch2"></div>CH · B</div>
+        <select id="sel2" onchange="updateSwatch(2)"><option value="">— SELECT ID —</option></select>
+        <input type="text" id="ink2" placeholder="Ink name / description…">
+      </div>
+    </div>
+
+    <button class="apply-btn" onclick="applyConfig()">▶ APPLY</button>
+  </div>
+</div>
+
+<script>
+// ── Colour map ─────────────────────────────────────────────────────────────
+const COLOR_MAP = {
+  C:  { bg: '#00b8c8', label: 'Cyan' },
+  M:  { bg: '#d4107a', label: 'Magenta' },
+  Y:  { bg: '#f0d800', label: 'Yellow' },
+  K:  { bg: '#222222', label: 'Black' },
+  R:  { bg: '#d42818', label: 'Red' },
+  G:  { bg: '#20a850', label: 'Green' },
+  B:  { bg: '#ffb480', label: 'Binder' },
+  O:  { bg: '#f07800', label: 'Orange' },
+  W1: { bg: '#e0e4ec', label: 'White 1' },
+  W2: { bg: '#e0e4ec', label: 'White 2' },
+  W3: { bg: '#e0e4ec', label: 'White 3' },
+  W4: { bg: '#e0e4ec', label: 'White 4' },
+  S1: { bg: '#7a8898', label: 'Softener 1' },
+  S2: { bg: '#7a8898', label: 'Softener 2' },
+  S3: { bg: '#7a8898', label: 'Softener 3' },
+  S4: { bg: '#7a8898', label: 'Softener 4' },
+  B1: { bg: '#ffb480', label: 'Binder 1' },
+  B2: { bg: '#ffb480', label: 'Binder 2' },
+  B3: { bg: '#ffb480', label: 'Binder 3' },
+  B4: { bg: '#ffb480', label: 'Binder 4' },
+};
+
+const BLANK_BG    = '#dde4f0';
+const LIGHT_IDS   = new Set(['Y','W1','W2','W3','W4']);
+const IDENTIFIERS = ['C','M','Y','K','R','G','B','O','W1','W2','W3','W4','S1','S2','S3','S4','B1','B2','B3','B4'];
+
+// heads[idx] = { mode, ch1, ch2, ink1, ink2 }
+let heads = [];
+let numRows = 2;
+let numCols = 4;
+let selectedHead = null;
+let pendingRows = null;
+let pendingCols = null;
+
+// ── Init ───────────────────────────────────────────────────────────────────
+function init() {
+  // Populate selects
+  ['sel1','sel2'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">— SELECT ID —</option>';
+    IDENTIFIERS.forEach(v => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v; sel.appendChild(o);
+    });
+  });
+
+  // Sync total display on input change
+  document.getElementById('inputRows').addEventListener('input', updateTotal);
+  document.getElementById('inputCols').addEventListener('input', updateTotal);
+
+  buildLegend();
+  buildArray(numRows, numCols);
+}
+
+function updateTotal() {
+  const r = parseInt(document.getElementById('inputRows').value) || 0;
+  const c = parseInt(document.getElementById('inputCols').value) || 0;
+  document.getElementById('totalCount').textContent = r * c;
+}
+
+// ── Layout rebuild ─────────────────────────────────────────────────────────
+function requestRebuild() {
+  const r = Math.max(1, Math.min(12, parseInt(document.getElementById('inputRows').value) || 1));
+  const c = Math.max(1, Math.min(20, parseInt(document.getElementById('inputCols').value) || 1));
+  const newTotal = r * c;
+  const oldTotal = numRows * numCols;
+
+  // If new layout is smaller, warn about data loss
+  if (newTotal < oldTotal) {
+    pendingRows = r; pendingCols = c;
+    document.getElementById('confirmBar').classList.add('visible');
+    return;
+  }
+  buildArray(r, c);
+}
+
+function confirmRebuild() {
+  document.getElementById('confirmBar').classList.remove('visible');
+  buildArray(pendingRows, pendingCols);
+  pendingRows = pendingCols = null;
+}
+
+function cancelRebuild() {
+  document.getElementById('confirmBar').classList.remove('visible');
+  // Reset inputs to current layout
+  document.getElementById('inputRows').value = numRows;
+  document.getElementById('inputCols').value = numCols;
+  updateTotal();
+  pendingRows = pendingCols = null;
+}
+
+function buildArray(rows, cols) {
+  closeModal();
+  numRows = rows;
+  numCols = cols;
+
+  const total = rows * cols;
+
+  // Preserve existing configs, extend or trim
+  const oldHeads = heads;
+  heads = Array.from({ length: total }, (_, i) =>
+    i < oldHeads.length
+      ? oldHeads[i]
+      : { mode: 'single', ch1: '', ch2: '', ink1: '', ink2: '' }
+  );
+
+  const container = document.getElementById('diagramContainer');
+  container.innerHTML = '';
+
+  for (let r = 0; r < rows; r++) {
+    const rowBlock = document.createElement('div');
+    rowBlock.className = 'row-block';
+
+    const label = document.createElement('span');
+    label.className = 'row-tag-label';
+    label.textContent = `ROW ${r + 1}`;
+    // Indent label for staggered rows
+    if (r % 2 === 1) label.style.marginLeft = 'calc(var(--head-w)/2 + var(--gap)/2)';
+    rowBlock.appendChild(label);
+
+    const rowEl = document.createElement('div');
+    rowEl.className = 'head-row' + (r % 2 === 1 ? ' staggered' : '');
+
+    for (let c = 0; c < cols; c++) {
+      const idx = r * cols + c;
+      rowEl.appendChild(buildHead(idx, idx + 1, r, c));
+    }
+
+    rowBlock.appendChild(rowEl);
+    container.appendChild(rowBlock);
+  }
+
+  // Re-render all heads to restore their visual state
+  for (let i = 0; i < total; i++) renderHead(i);
+
+  document.getElementById('inputRows').value = rows;
+  document.getElementById('inputCols').value = cols;
+  updateTotal();
+}
+
+function buildHead(idx, label, rowIdx, colIdx) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'head-wrapper';
+  wrapper.id = `head${idx}`;
+  wrapper.dataset.idx    = idx;
+  wrapper.dataset.label  = label;
+  wrapper.dataset.rowIdx = rowIdx;
+  wrapper.dataset.colIdx = colIdx;
+
+  const el = document.createElement('div');
+  el.className = 'printhead';
+  el.innerHTML = `
+    <div class="head-fill head-unassigned-bg" id="fill_${idx}"></div>
+    <div class="head-fill-left"  id="fillL_${idx}"   style="display:none;background:${BLANK_BG}"></div>
+    <div class="head-fill-right" id="fillR_${idx}"   style="display:none;background:${BLANK_BG}"></div>
+    <div class="head-divider"    id="divider_${idx}" style="display:none"></div>
+    <div class="head-overlay">
+      <div class="head-single" id="hcs_${idx}">
+        <div class="head-id dim-text" id="headId_${idx}">—</div>
+        <div class="head-inkname dim-text" id="headInk_${idx}"></div>
+      </div>
+      <div class="head-dual" id="hcd_${idx}" style="display:none">
+        <div class="head-half">
+          <div class="head-id-half" id="headIdL_${idx}">—</div>
+          <div class="head-inkname-half" id="headInkL_${idx}"></div>
+        </div>
+        <div class="head-half">
+          <div class="head-id-half" id="headIdR_${idx}">—</div>
+          <div class="head-inkname-half" id="headInkR_${idx}"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  el.addEventListener('click', () => openModal(idx));
+
+  const num = document.createElement('div');
+  num.className = 'head-num';
+  num.textContent = `#${label}`;
+
+  wrapper.appendChild(el);
+  wrapper.appendChild(num);
+  return wrapper;
+}
+
+// ── Legend ─────────────────────────────────────────────────────────────────
+function buildLegend() {
+  const legend = document.querySelector('.legend');
+  const title  = legend.querySelector('.legend-title');
+  legend.innerHTML = ''; legend.appendChild(title);
+  const seen = {};
+  IDENTIFIERS.forEach(id => {
+    const bg = COLOR_MAP[id].bg;
+    if (seen[bg]) return; seen[bg] = true;
+    const lbl =
+      id === 'W1' ? 'W1–4  White' :
+      id === 'S1' ? 'S1–4  Softener' :
+      id === 'B1' ? 'B / B1–4  Binder' :
+      (id.startsWith('W')||id.startsWith('S')||(id.startsWith('B')&&id.length>1)) ? null :
+      `${id}  —  ${COLOR_MAP[id].label}`;
+    if (!lbl) return;
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `<div class="legend-swatch" style="background:${bg}${id.startsWith('W')?';border:1px solid #b0b8cc;':''}"></div>${lbl}`;
+    legend.appendChild(item);
+  });
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+function openModal(idx) {
+  if (selectedHead !== null)
+    document.getElementById(`head${selectedHead}`)?.querySelector('.printhead')?.classList.remove('selected');
+  selectedHead = idx;
+  document.getElementById(`head${idx}`)?.querySelector('.printhead')?.classList.add('selected');
+
+  const h       = heads[idx];
+  const wrapper = document.getElementById(`head${idx}`);
+  const label   = wrapper.dataset.label;
+  const rowIdx  = parseInt(wrapper.dataset.rowIdx);
+  const colIdx  = parseInt(wrapper.dataset.colIdx);
+
+  document.getElementById('cfgTitle').textContent = `HEAD ${label}`;
+  document.getElementById('cfgHint').textContent  = `ROW ${rowIdx + 1} · COL ${colIdx + 1}`;
+
+  setMode(h.mode, false);
+  document.getElementById('sel1').value = h.ch1;
+  document.getElementById('sel2').value = h.ch2;
+  document.getElementById('ink1').value = h.ink1;
+  document.getElementById('ink2').value = h.ink2;
+  updateSwatch(1); updateSwatch(2);
+
+  document.getElementById('modalBackdrop').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.remove('open');
+  if (selectedHead !== null) {
+    document.getElementById(`head${selectedHead}`)?.querySelector('.printhead')?.classList.remove('selected');
+    selectedHead = null;
+  }
+}
+
+function handleBackdropClick(e) {
+  if (e.target === document.getElementById('modalBackdrop')) closeModal();
+}
+
+// ── Mode ───────────────────────────────────────────────────────────────────
+function setMode(mode, redraw = true) {
+  document.getElementById('btnSingle').classList.toggle('active', mode === 'single');
+  document.getElementById('btnDual').classList.toggle('active',   mode === 'dual');
+  document.getElementById('ch2Block').style.display = mode === 'dual' ? 'block' : 'none';
+  if (selectedHead !== null && redraw) {
+    heads[selectedHead].mode = mode;
+    if (mode === 'single') {
+      heads[selectedHead].ch2 = ''; heads[selectedHead].ink2 = '';
+      document.getElementById('sel2').value = '';
+      document.getElementById('ink2').value = '';
+      updateSwatch(2);
+    }
+  }
+}
+
+function updateSwatch(ch) {
+  const val = document.getElementById(`sel${ch}`).value;
+  document.getElementById(`swatch${ch}`).style.background = val ? COLOR_MAP[val]?.bg : 'transparent';
+}
+
+// ── Apply config ───────────────────────────────────────────────────────────
+function applyConfig() {
+  if (selectedHead === null) return;
+  const h    = heads[selectedHead];
+  const mode = document.getElementById('btnDual').classList.contains('active') ? 'dual' : 'single';
+  h.mode = mode;
+  h.ch1  = document.getElementById('sel1').value;
+  h.ch2  = mode === 'dual' ? document.getElementById('sel2').value : '';
+  h.ink1 = document.getElementById('ink1').value;
+  h.ink2 = mode === 'dual' ? document.getElementById('ink2').value : '';
+  renderHead(selectedHead);
+  flashHead(selectedHead);
+  closeModal();
+}
+
+// ── Render head ────────────────────────────────────────────────────────────
+function textColor(id)  { return LIGHT_IDS.has(id) ? 'rgba(0,0,0,0.62)'          : 'rgba(255,255,255,0.93)'; }
+function textShadow(id) { return LIGHT_IDS.has(id) ? 'none'                       : '0 1px 4px rgba(0,0,0,0.55)'; }
+
+function renderHead(idx) {
+  const h       = heads[idx];
+  const fill    = document.getElementById(`fill_${idx}`);
+  const fillL   = document.getElementById(`fillL_${idx}`);
+  const fillR   = document.getElementById(`fillR_${idx}`);
+  const divider = document.getElementById(`divider_${idx}`);
+  const hcs     = document.getElementById(`hcs_${idx}`);
+  const hcd     = document.getElementById(`hcd_${idx}`);
+  if (!fill) return;
+
+  const bg1 = h.ch1 ? COLOR_MAP[h.ch1]?.bg : BLANK_BG;
+  const bg2 = h.ch2 ? COLOR_MAP[h.ch2]?.bg : BLANK_BG;
+
+  if (h.mode === 'dual' && (h.ch1 || h.ch2)) {
+    fill.style.display = 'none';
+    fillL.style.display = fillR.style.display = divider.style.display = 'block';
+    fillL.style.background = bg1; fillR.style.background = bg2;
+    hcs.style.display = 'none'; hcd.style.display = 'flex';
+
+    const setHalf = (side, ch, ink) => {
+      const idEl  = document.getElementById(`headId${side}_${idx}`);
+      const inkEl = document.getElementById(`headInk${side}_${idx}`);
+      idEl.textContent  = ch || '—';
+      inkEl.textContent = ink || '';
+      const c = ch ? textColor(ch) : 'rgba(100,120,150,0.7)';
+      const s = ch ? textShadow(ch) : 'none';
+      idEl.style.color = inkEl.style.color = c;
+      idEl.style.textShadow = inkEl.style.textShadow = s;
+    };
+    setHalf('L', h.ch1, h.ink1);
+    setHalf('R', h.ch2, h.ink2);
+
+  } else {
+    fillL.style.display = fillR.style.display = divider.style.display = 'none';
+    hcd.style.display = 'none';
+    fill.style.display = 'block'; hcs.style.display = 'flex';
+
+    const idEl  = document.getElementById(`headId_${idx}`);
+    const inkEl = document.getElementById(`headInk_${idx}`);
+
+    if (h.ch1) {
+      fill.style.background = bg1;
+      fill.classList.remove('head-unassigned-bg');
+      idEl.textContent  = h.ch1;
+      inkEl.textContent = h.ink1 || '';
+      const c = textColor(h.ch1), s = textShadow(h.ch1);
+      idEl.style.color  = inkEl.style.color  = c;
+      idEl.style.textShadow = inkEl.style.textShadow = s;
+      idEl.classList.remove('dim-text');
+      inkEl.classList.remove('dim-text');
+    } else {
+      fill.style.background = BLANK_BG;
+      fill.classList.add('head-unassigned-bg');
+      idEl.textContent  = '—';
+      inkEl.textContent = '';
+      idEl.className  = 'head-id dim-text';
+      inkEl.className = 'head-inkname dim-text';
+      idEl.style.color = idEl.style.textShadow = '';
+      inkEl.style.color = inkEl.style.textShadow = '';
+    }
+  }
+}
+
+function flashHead(idx) {
+  const el = document.getElementById(`head${idx}`)?.querySelector('.printhead');
+  if (!el) return;
+  el.style.transition  = 'box-shadow 0.05s, border-color 0.05s';
+  el.style.boxShadow   = '0 0 0 3px #22b355, 0 6px 20px rgba(34,179,85,0.3)';
+  el.style.borderColor = '#22b355';
+  setTimeout(() => { el.style.boxShadow = ''; el.style.borderColor = ''; el.style.transition = ''; }, 600);
+}
+
+init();
+</script>
+</body>
+</html>
